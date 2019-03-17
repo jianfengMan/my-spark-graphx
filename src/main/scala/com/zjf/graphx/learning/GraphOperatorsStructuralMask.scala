@@ -49,5 +49,12 @@ object GraphOperatorsStructuralMask {
     validGraph.vertices.collect.foreach(println)
     println("\nvalidCCGraph:");
     validCCGraph.vertices.collect.foreach(println)
+
+    println("3333")
+    val validGraph1 = graph.subgraph(vpred = (id, attr) => attr._2 != "Missing")
+    println("\nvalidGraph1:");
+    validGraph1.vertices.collect.foreach(println)
+    println()
+    validGraph
   }
 }

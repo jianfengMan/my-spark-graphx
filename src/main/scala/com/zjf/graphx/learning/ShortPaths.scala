@@ -25,6 +25,7 @@ object ShortPaths {
 
     // 要求最短路径的点集合
     val landmarks = Seq(1, 4).map(_.toLong)
+    println(landmarks)
 
     // 计算最短路径
     val results = ShortestPaths.run(graph, landmarks).vertices.collect.map {

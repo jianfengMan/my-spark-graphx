@@ -22,37 +22,44 @@ object GetStart {
     // Create an RDD for edges
     val relationships: RDD[Edge[String]] =
       sc.parallelize(Array(Edge(3L, 7L, "collab"), Edge(5L, 3L, "advisor"),
-        Edge(2L, 5L, "colleague"), Edge(5L, 7L, "pi")))
+        Edge(2L, 5L, "colleague"), Edge(5L, 7L, "pi"),Edge(7L, 3L, "collab")))
     // Define a default user in case there are relationship with missing user
     val defaultUser = ("John Doe", "Missing")
     // Build the initial Graph
     val graph = Graph(users, relationships, defaultUser)
 
-    // Count all users which are postdocs
-    println(graph.vertices.filter { case (id, (name, pos)) => pos == "postdoc" }.count())
-    println("----------------")
+    val gcc = graph.connectedComponents()
+    gcc.cache()
+    gcc.triplets.foreach(println(_))
 
-    // Count all the edges where src > dst
-    println(graph.edges.filter(e => e.srcId > e.dstId).count)
+    println("--------------------------")
+    gcc.vertices.foreach(println(_))
 
-    //another method
-    println(graph.edges.filter { case Edge(src, dst, prop) => src > dst }.count)
-
-    //  reverse
-    println(graph.edges.filter { case Edge(src, dst, prop) => src < dst }.count)
-
-    // Use the triplets view to create an RDD of facts.
-    val facts: RDD[String] =
-      graph.triplets.map(triplet =>
-        triplet.srcAttr._1 + " is the " + triplet.attr + " of " + triplet.dstAttr._1)
-    facts.collect.foreach(println(_))
-
-    // Use the triplets view to create an RDD of facts.
-    println("\ntriplets:");
-    val facts2: RDD[String] =
-      graph.triplets.map(triplet =>
-        triplet.srcId + "(" + triplet.srcAttr._1 + " " + triplet.srcAttr._2 + ")" + " is the" + triplet.attr + " of " + triplet.dstId + "(" + triplet.dstAttr._1 + " " + triplet.dstAttr._2 + ")")
-    facts2.collect.foreach(println(_))
+//    // Count all users which are postdocs
+//    println(graph.vertices.filter { case (id, (name, pos)) => pos == "postdoc" }.count())
+//    println("----------------")
+//
+//    // Count all the edges where src > dst
+//    println(graph.edges.filter(e => e.srcId > e.dstId).count)
+//
+//    //another method
+//    println(graph.edges.filter { case Edge(src, dst, prop) => src > dst }.count)
+//
+//    //  reverse
+//    println(graph.edges.filter { case Edge(src, dst, prop) => src < dst }.count)
+//
+//    // Use the triplets view to create an RDD of facts.
+//    val facts: RDD[String] =
+//      graph.triplets.map(triplet =>
+//        triplet.srcAttr._1 + " is the " + triplet.attr + " of " + triplet.dstAttr._1)
+//    facts.collect.foreach(println(_))
+//
+//    // Use the triplets view to create an RDD of facts.
+//    println("\ntriplets:");
+//    val facts2: RDD[String] =
+//      graph.triplets.map(triplet =>
+//        triplet.srcId + "(" + triplet.srcAttr._1 + " " + triplet.srcAttr._2 + ")" + " is the" + triplet.attr + " of " + triplet.dstId + "(" + triplet.dstAttr._1 + " " + triplet.dstAttr._2 + ")")
+//    facts2.collect.foreach(println(_))
     sc.stop()
   }
 }
